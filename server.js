@@ -1,7 +1,13 @@
-var express = require('express');
-var bodyParser = require('body-parser');
+const express = require('express');
+const bodyParser = require('body-parser');
+const app = express();
 
-var app = express();
+const posts = require('./controllers/posts')(app);
+app.use(express.json());
+app.use(express.urlencoded( { extended: false }));
+
+// Initialize Database
+const db = require('./data/reddit-db');
 
 const exphbs = require('express-handlebars');
 app.engine('handlebars', exphbs.engine());
