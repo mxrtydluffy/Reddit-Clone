@@ -9,6 +9,7 @@ app.use(express.urlencoded( { extended: false }));
 // Initialize Database
 const db = require('./data/reddit-db');
 
+// Middleware
 const exphbs = require('express-handlebars');
 app.engine('handlebars', exphbs.engine());
 app.set('view engine', 'handlebars');
@@ -16,28 +17,36 @@ app.set('view engine', 'handlebars');
 
 app.use(express.urlencoded({ extended: true }));
 
+// HOME
 app.get('/', function (req, res) {
     res.render('home');
 });
 
-
 // RESOURCES //
+app.post('/posts/new', (req, res) => {
+    const post = new Post(req.body);
 
-
-// NEW
-app.get('/cases/new', (req, res) => {
-res.render('cases-new', { case: {} });
-})
-
-// CREATE
-app.post('/cases', (req, res) => {
-console.log("hiya")
-
-const caseId = "3";
-res.redirect(`/cases/${caseId}`)
+    // SAVE POST MODEL TO DATABASE
+    post.save()
+    .then(() => {
+        res.redirect('/')
+    })
+    .catch(err => console.log(err))
 });
 
-// INDEX //
+const Post = require('./models/post');
+
+module.exports = (app) => {
+    // CREATE
+    app.post('/posts/new', (req, res) => {
+
+        // POST MODEL
+        const post = new Post(req.body);
+
+        // SAVE INSTANCE
+        post.save(() => res.redirect('/'));
+    });
+};
 
 // SHOW
 app.get('/cases/:id', (req, res) => {
@@ -62,4 +71,5 @@ app.delete('/cases/:id', (req, res) => {
 
 })
 
+// PORT
 app.listen(3000);
