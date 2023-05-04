@@ -6,3 +6,11 @@ const Post = require('../models/post');
      console.log(req.body);
    });
  };
+
+ app.get('/', (req, res) => {
+  Post.find({}).lean()
+  .then((posts) => res.render('posts-index', { posts }))
+  .catch((err) => {
+    console.log(err.message);
+  })
+})
