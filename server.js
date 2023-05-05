@@ -1,75 +1,68 @@
+// Main models & dependencies
 const express = require('express');
-const bodyParser = require('body-parser');
+// const bodyParser = require('body-parser');
 const app = express();
+const exphbs = require('express-handlebars');
 
-const posts = require('./controllers/posts')(app);
-app.use(express.json());
-app.use(express.urlencoded( { extended: false }));
+app.use(express.static("public"));
 
 // Initialize Database
 const db = require('./data/reddit-db');
 
 // Middleware
-const exphbs = require('express-handlebars');
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: true }))
 app.engine('handlebars', exphbs.engine());
 app.set('view engine', 'handlebars');
+app.use(express.urlencoded({ extended: false }));
+app.set("views", "./views")
+app.use(express.json())
 
+// // HOME
+// app.get('/', (req, res) => {
+//     res.render('home');
+// });
 
-app.use(express.urlencoded({ extended: true }));
+// // RESOURCES //
 
-// HOME
-app.get('/', function (req, res) {
-    res.render('home');
-});
+// const Post = require('./models/post');
 
-// RESOURCES //
-app.post('/posts/new', (req, res) => {
-    const post = new Post(req.body);
+// app.post('/posts/new', (req, res) => {
+//     const post = new Post(req.body);
+//     post.save()
+//     .then(() => res.redirect('/'))
+//     .catch(err => console.log(err));
+// });
 
-    // SAVE POST MODEL TO DATABASE
-    post.save()
-    .then(() => {
-        res.redirect('/')
-    })
-    .catch(err => console.log(err))
-});
+// // SHOW
+// app.get('/cases/:id', (req, res) => {
+//     const id = req.params.id;
+//     const caseData = fetchCaseData(id);
 
-const Post = require('./models/post');
+//     res.render('cases-show', { case: caseData });
+// });
 
-module.exports = (app) => {
-    // CREATE
-    app.post('/posts/new', (req, res) => {
+// // EDIT
+// app.get('/cases/:id/edit', (req, res) => {
 
-        // POST MODEL
-        const post = new Post(req.body);
+// });
 
-        // SAVE INSTANCE
-        post.save(() => res.redirect('/'));
-    });
-};
+// // UPDATE
+// app.put('/cases/:id', (req, res) => {
 
-// SHOW
-app.get('/cases/:id', (req, res) => {
-    const id = req.params.id;
-    const caseData = fetchCaseData(id);
+// });
 
-    res.render('cases-show', { case: caseData });
-});
+// // DESTROY
+// app.delete('/cases/:id', (req, res) => {
 
-// EDIT
-app.get('/cases/:id/edit', (req, res) => {
+// });
 
-})
-
-// UPDATE
-app.put('/cases/:id', (req, res) => {
-
-})
-
-// DESTROY
-app.delete('/cases/:id', (req, res) => {
-
-})
+// CONTROLLERS
+require('./controllers/posts')(app);
+// add auth here
 
 // PORT
 app.listen(3000);
+
+// TESTING
+module.exports = app;
