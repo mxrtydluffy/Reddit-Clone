@@ -59,6 +59,7 @@ app.use(express.json())
 
 // CONTROLLERS
 require('./controllers/posts')(app);
+require('./controllers/comments')(app);
 // add auth here
 
 // PORT

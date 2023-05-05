@@ -27,8 +27,10 @@ const Post = require("../models/post");
 
   // DISPLAY
   app.get("/posts/:id", (req, res) => {
+    // SEARCH POSTS
     Post.findById(req.params.id)
     .lean()
+    .populate("comments")
     .then((post) => res.render("posts-show", { post }))
     .catch((err) => {
       console.log(err.message)
