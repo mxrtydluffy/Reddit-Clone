@@ -1,29 +1,49 @@
 const Post = require("../models/post");
+const User = require("../models/user");
+const Comment = require("../models/comment");
 
  module.exports = (app) => {
    app.get("/", (req, res) => {
+    const { user } = req;
+    console.log(req.cookies);
     Post.find({})
       .lean()
-      .then((posts) => res.render('posts-index', { posts }))
+      .populate()
+      .then((posts) => res.render("posts-index", { posts, user }))
       .catch((err) => {
-      console.log(err.message);
-    });
+        console.log(err.message);
+      });
   });
 
   // CREATE
-  app.get("/post/new", (req, res) => {
-    res.render("post-new");
+  app.get("/posts/new", (req, res) => {
+    if (req.user) {
+      res.render("posts-new");
+    } else {
+      res.redirect("/");
+    }
   });
 
   app.post("/post/new", (req, res) => {
-    console.log(req.body);
-    const post = new Post(req.body);
-
-    post
-      .save()
-      .then(() => res.redirect('/'))
-      .catch(err => console.log(err));
-  })
+    if (req.user) {
+      const userId = req.user._id;
+      const post = new Post(req.body);
+      post.author = userId;
+      post
+        .save()
+        .then(() => User.findById(userId))
+        .then((user) => {
+          user.posts.unshift(post);
+          user.save();
+          return res.redirect(`/posts/${post._id}`);
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
+      } else {
+        return res.status(401);
+      }
+    });
 
   // DISPLAY
   app.get("/posts/:id", (req, res) => {

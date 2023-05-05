@@ -3,6 +3,8 @@ const express = require('express');
 require('dotenv').config();
 const app = express();
 const exphbs = require('express-handlebars');
+const cookieParser = require('cookie-parser');
+const checkAuth = require("./middleware/checkAuth");
 
 app.use(express.static("public"));
 
@@ -17,6 +19,8 @@ app.set('view engine', 'handlebars');
 app.use(express.urlencoded({ extended: false }));
 app.set("views", "./views")
 app.use(express.json())
+app.use(cookieParser())
+app.use(checkAuth)
 
 // // HOME
 // app.get('/', (req, res) => {
