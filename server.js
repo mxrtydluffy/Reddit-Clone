@@ -1,6 +1,6 @@
 // Main models & dependencies
 const express = require('express');
-// const bodyParser = require('body-parser');
+require('dotenv').config();
 const app = express();
 const exphbs = require('express-handlebars');
 
@@ -60,7 +60,7 @@ app.use(express.json())
 // CONTROLLERS
 require('./controllers/posts')(app);
 require('./controllers/comments')(app);
-// add auth here
+require('./controllers/auth.js')(app);
 
 // PORT
 app.listen(3000);
