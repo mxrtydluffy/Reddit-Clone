@@ -10,6 +10,7 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
+// PASSWORD ENCRYPTION
 userSchema.pre("save", function (next) {
   const user = this;
   if (!user.isModified("password")) {

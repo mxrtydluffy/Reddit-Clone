@@ -19,12 +19,11 @@ require("./data/reddit-db");
 app.engine("handlebars", exphbs.engine({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 app.use(express.urlencoded({ extended: false }));
-app.set("views", "./views")
-app.use(express.json())
-app.use(checkAuth)
-app.unsubscribe(express.static("public"));
+app.set("views", "./views");
+app.use(express.json());
+app.use(checkAuth);
 
-// // HOME
+// HOME
 // app.get('/', (req, res) => {
 //     res.render('home');
 // });
@@ -67,10 +66,12 @@ app.unsubscribe(express.static("public"));
 require("./controllers/posts")(app);
 require("./controllers/comments")(app);
 require("./controllers/auth.js")(app);
+require("./controllers/replies.js")(app);
+require("./controllers/auth.js")(app);
 
-app.get("/posts/new", (req, res) => {
-    res.render("posts-new");
-});
+// app.get("/posts/new", (req, res) => {
+//     res.render("posts-new");
+// });
 
 // PORT
 app.listen(3000);
