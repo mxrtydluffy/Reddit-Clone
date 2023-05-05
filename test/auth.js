@@ -1,7 +1,7 @@
 // test/auth.js
 const chai = require("chai");
 const chaiHttp = require("chai-http");
-const { describe, it } = require("mocha");
+const { describe, it, after } = require("mocha");
 const app = require("../server");
 
 const should = chai.should();
@@ -14,9 +14,6 @@ const agent = chai.request.agent(app);
 const User = require("../models/user");
 
 describe("User", function () {
-  after(function () {
-    agent.close();
-  });
 
   // TESTING
   it("should not be able to login if they have not registered", function (done) {
@@ -30,16 +27,45 @@ describe("User", function () {
 
   // SIGNUP
   it("should be able to signup", function (done) {
-    User.findOneAndRemove({ username: "testone" }, function () {
-      agent
+    User.findOneAndDelete({ username: "testone" })
+    .then(function () {
+    agent
         .post("/sign-up")
         .send({ username: "testone", password: "password" })
         .end(function (err, res) {
-          console.log(res.body);
-          res.should.have.status(200);
-          agent.should.have.cookie("nToken");
-          done();
+        console.log(res.body);
+        res.should.have.status(200);
+        agent.should.have.cookie("nToken");
+        done();
         });
+    })
+    .catch(function (err) {
+        done(err);
+    })
+  });
+
+  // LOGIN
+  it("Should be able to login", function (done) {
+    agent
+        .post("/login")
+        .send({ username: "testone", password: "password" })
+        .end(function (err, res) {
+            res.should.have.status(200);
+            agent.should.have.cookie("nToken");
+            done();
+        });
+  });
+
+  // LOGOUT
+  it("Should be able to logout", function (done) {
+    agent.get("/logout").end(function (err, res) {
+        res,should.have.status(200);
+        agent.should.not.have.cookie("nToken");
+        done();
     });
+  });
+
+  after(function () {
+    return User.findOneAndDelete({ username: "testone" });
   });
 });
